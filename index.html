@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도쿄 여행 1일차 - 설레는 시작</title>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Font (Noto Sans KR) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; }
+        .animation-fade-in { animation: fadeIn 0.3s ease-in-out; }
+        .animation-scale-up { animation: scaleUp 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        /* 스크롤바 숨기기 (팝업 내부) */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+        
+        // 아이콘 직접 정의
+        const Icons = {
+            Plane: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M2 12h20"/><path d="M13 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M13 16a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2z"/></svg>),
+            MapPin: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>),
+            Home: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>),
+            Utensils: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" /><path d="M7 2v20" /><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" /></svg>),
+            Camera: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" /><circle cx="12" cy="13" r="3" /></svg>),
+            Moon: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>),
+            Beer: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M17 11h1a3 3 0 0 1 0 6h-1"/><path d="M9 12v6"/><path d="M13 12v6"/><path d="M14 7.5c-1 0-1.44.5-3 .5s-2-.5-3-.5-1.72.5-2.5.5a2.5 2.5 0 0 1 0-5c.78 0 1.57.5 2.5.5S9.44 2 11 2s2 1.5 2 1.5 1.72-.5 2.5-.5a2.5 2.5 0 0 1 0 5c-.78 0-1.5-.5-2.5-.5Z"/><path d="M5 8v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8"/></svg>),
+            ChevronDown: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m6 9 6 6 6-6" /></svg>),
+            ChevronUp: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m18 15-6-6-6 6" /></svg>),
+            Heart: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>),
+            Star: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none" {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>),
+            X: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>),
+            AlertCircle: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>),
+            CheckCircle: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>),
+            Ticket: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>)
+        };
+
+        // 팝업 모달 컴포넌트
+        const Modal = ({ isOpen, onClose, title, children }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animation-fade-in" onClick={onClose}></div>
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[80vh] flex flex-col relative z-10 animation-scale-up overflow-hidden">
+                        <div className="bg-blue-600 text-white p-4 flex justify-between items-center shrink-0">
+                            <h3 className="font-bold text-lg">{title}</h3>
+                            <button onClick={onClose} className="bg-white/20 p-1 rounded-full hover:bg-white/30 transition">
+                                <Icons.X size={20} />
+                            </button>
+                        </div>
+                        <div className="p-4 overflow-y-auto no-scrollbar">
+                            {children}
+                        </div>
+                        <div className="p-3 bg-gray-50 border-t border-gray-100 text-center shrink-0">
+                            <button onClick={onClose} className="text-sm font-bold text-blue-600 w-full py-2">
+                                확인 완료
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const ScheduleCard = ({ time, title, iconName, children, isHighlight = false, onClick = null, clickHint = "" }) => {
+            const IconComponent = Icons[iconName];
+            return (
+                <div 
+                    className={`relative pl-8 pb-8 border-l-2 ${isHighlight ? 'border-pink-400' : 'border-gray-200'} last:border-l-0 ${onClick ? 'cursor-pointer group' : ''}`}
+                    onClick={onClick}
+                >
+                    <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full ${isHighlight ? 'bg-pink-500 ring-4 ring-pink-100' : 'bg-gray-300'}`} />
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md font-mono">{time}</span>
+                        <h3 className={`text-lg font-bold ${isHighlight ? 'text-pink-600' : 'text-gray-800 group-hover:text-blue-600 transition'}`}>{title}</h3>
+                        {IconComponent && <IconComponent className={isHighlight ? 'text-pink-500' : 'text-gray-400'} size={18} />}
+                        {onClick && (
+                            <span className="ml-auto text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold animate-pulse">
+                                {clickHint || "Click!"}
+                            </span>
+                        )}
+                    </div>
+                    <div className={`bg-white rounded-xl p-4 shadow-sm border ${onClick ? 'border-blue-100 group-hover:border-blue-300 group-hover:shadow-md transition-all' : 'border-gray-100'}`}>
+                        {children}
+                    </div>
+                </div>
+            );
+        };
+
+        const DetailCard = ({ image, name, desc, point, link }) => (
+            <div className="mb-6 last:mb-0 bg-gray-50 rounded-xl p-3 border border-gray-200">
+                <img 
+                    src={image} 
+                    alt={name} 
+                    className="w-full h-32 object-cover rounded-lg mb-3 shadow-sm"
+                    onError={(e) => {e.target.src = 'https://via.placeholder.com/600x300?text=No+Image'}}
+                />
+                <h4 className="text-lg font-bold text-gray-800 mb-1">{name}</h4>
+                <p className="text-sm text-gray-600 leading-relaxed mb-3">
+                    <span className="bg-pink-100 text-pink-800 px-1.5 py-0.5 rounded mr-1 text-xs font-bold">Point</span>
+                    {point}
+                </p>
+                <a 
+                    href={link} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="flex items-center justify-center w-full py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-bold shadow-sm hover:bg-gray-100 transition-colors"
+                >
+                    <Icons.MapPin size={16} className="mr-1 text-red-500" /> 구글지도 보기
+                </a>
+            </div>
+        );
+
+        const App = () => {
+            const [showLunchOptions, setShowLunchOptions] = useState(true);
+            const [isAirportModalOpen, setIsAirportModalOpen] = useState(false);
+
+            return (
+                <div className="max-w-md mx-auto bg-gray-50 min-h-screen font-sans pb-20 shadow-xl">
+                    {/* Header */}
+                    <header className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-b-3xl shadow-lg sticky top-0 z-10">
+                        <div className="flex justify-between items-end">
+                            <div>
+                                <p className="text-blue-100 text-sm font-medium mb-1">Tokyo Trip Day 1</p>
+                                <h1 className="text-3xl font-bold">2/18 (수)</h1>
+                                <p className="text-blue-200 text-sm mt-1">설렘 가득 도쿄 도착 ✈️</p>
+                            </div>
+                            <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
+                                <Icons.Heart className="text-pink-300 fill-pink-300" />
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Timeline */}
+                    <div className="p-6 mt-2">
+                        
+                        {/* 1. 공항 도착 및 이동 (클릭 시 모달) */}
+                        <ScheduleCard 
+                            time="11:55 - 14:30" 
+                            title="도착 및 숙소 이동" 
+                            iconName="Plane"
+                            onClick={() => setIsAirportModalOpen(true)}
+                            clickHint="상세 경로 보기"
+                        >
+                            <ul className="text-sm text-gray-600 space-y-3 pointer-events-none">
+                                <li className="flex items-start">
+                                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-1.5 mr-2 shrink-0" />
+                                    <span>🛬 <strong>나리타 공항 도착</strong>: 입국 심사</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-1.5 mr-2 shrink-0" />
+                                    <span>🚅 <strong>N'EX 탑승</strong>: 왕복 티켓 구매</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-1.5 mr-2 shrink-0" />
+                                    <span>🚕 <strong>택시 이동</strong>: 신주쿠 → 호텔</span>
+                                </li>
+                            </ul>
+                        </ScheduleCard>
+
+                        {/* 2. 체크인 */}
+                        <ScheduleCard time="14:30 - 15:00" title="체크인 & 짐 풀기" iconName="Home">
+                            <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                <h4 className="font-bold text-blue-900 mb-1">소테츠 프레사 인 히가시 신주쿠</h4>
+                                <p className="text-xs text-blue-700 mb-2">Sotetsu Fresa Inn Higashi Shinjuku</p>
+                                <p className="text-xs text-gray-600">
+                                    🏨 체크인 후 짐을 풀고 가볍게 나올 준비!<br/>
+                                    (로비 어메니티 챙기는 것 잊지 말기 ✨)
+                                </p>
+                            </div>
+                        </ScheduleCard>
+
+                        {/* 3. 점심 식사 (선택) */}
+                        <ScheduleCard time="15:00 - 16:00" title="늦은 점심 (메뉴 선택)" iconName="Utensils" isHighlight={true}>
+                            <div className="flex justify-between items-center mb-4">
+                                <p className="text-xs text-pink-600 font-bold">*신주쿠/숙소 근처 맛집 (3곳 중 선택)</p>
+                                <button 
+                                    onClick={() => setShowLunchOptions(!showLunchOptions)}
+                                    className="text-gray-400 hover:text-gray-600 bg-gray-100 p-1 rounded-full flex items-center justify-center"
+                                >
+                                    {showLunchOptions ? <Icons.ChevronUp size={20} /> : <Icons.ChevronDown size={20} />}
+                                </button>
+                            </div>
+                            
+                            {showLunchOptions && (
+                                <div className="space-y-4 animation-fade-in">
+                                    <DetailCard 
+                                        name="[라멘] 이치란 신주쿠 가부키초점"
+                                        image="https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&q=80&w=600&h=300"
+                                        point="설명이 필요 없는 돈코츠 라멘의 정석. 독서실 좌석에서 오롯이 맛에 집중!"
+                                        link="https://www.google.com/maps/search/?api=1&query=Ichiran+Shinjuku+Kabukicho" 
+                                    />
+                                    <DetailCard 
+                                        name="[교자] 신주쿠 카케코미 교자"
+                                        image="https://images.unsplash.com/photo-1626809712781-a75d564101e4?auto=format&fit=crop&q=80&w=600&h=300"
+                                        point="24시간 영업하는 활기찬 교자 전문점. 육즙 가득한 만두에 낮술 한잔? 🥟"
+                                        link="https://www.google.com/maps/search/?api=1&query=Shinjuku+Kakekomi+Gyoza"
+                                    />
+                                    <DetailCard 
+                                        name="[가정식] 마이도 오키니 식당"
+                                        image="https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?auto=format&fit=crop&q=80&w=600&h=300"
+                                        point="먹고 싶은 반찬을 골라 담는 일본 가정식 백반. 생선구이, 계란말이가 일품."
+                                        link="https://www.google.com/maps/search/?api=1&query=Shinjuku+Maido+Ookini+Shokudo"
+                                    />
+                                </div>
+                            )}
+                        </ScheduleCard>
+
+                        {/* 4. 시부야 이동 및 스카이 */}
+                        <ScheduleCard time="16:00 - 18:00" title="시부야 스카이 & 스크램블" iconName="Camera" isHighlight={true}>
+                             <div className="space-y-3">
+                                <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
+                                    <p className="font-bold text-orange-900 flex items-center mb-1">
+                                        <Icons.Star size={16} className="text-orange-500 mr-1"/> 필수 미션
+                                    </p>
+                                    <p className="text-sm text-gray-700 mb-3">
+                                        🌆 <strong>시부야 스카이 (16:30 입장)</strong><br/>
+                                        <span className="text-xs text-gray-500 pl-4">노을(17:25)과 야경을 모두 즐기는 골든타임!</span>
+                                    </p>
+                                    <a 
+                                        href="https://www.shibuya-scramble-square.com/sky/ticket/" 
+                                        target="_blank" 
+                                        rel="noreferrer"
+                                        className="flex items-center justify-center w-full py-2 bg-orange-500 text-white rounded-lg text-sm font-bold shadow-md hover:bg-orange-600 transition-colors"
+                                    >
+                                        <Icons.Ticket size={16} className="mr-1" /> 티켓 예매하기 (공식)
+                                    </a>
+                                </div>
+                                <div className="pl-2 border-l-2 border-gray-200">
+                                    <p className="text-sm text-gray-700 font-bold mb-1">📸 시부야 스크램블 교차로</p>
+                                    <p className="text-xs text-gray-500">
+                                        스카이 관람 후 내려와서 인증샷 촬영 (18:00~19:00)
+                                    </p>
+                                </div>
+                             </div>
+                        </ScheduleCard>
+
+                        {/* 5. 저녁 식사 (확정) */}
+                        <ScheduleCard time="19:15 (예약확정)" title="저녁: 야키니쿠 폰가 에비수" iconName="Utensils" isHighlight={true}>
+                            <div className="bg-gray-900 text-white p-4 rounded-xl shadow-lg relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-r from-red-900/40 to-black/40"></div>
+                                <div className="relative z-10">
+                                    <h4 className="text-xl font-bold text-yellow-500 mb-1">Yakiniku Ponga Ebisu</h4>
+                                    <p className="text-xs text-gray-300 mb-3">예약시간: 19:15 | 다다미 네기탄 & 트러플 솥밥</p>
+                                    <a 
+                                        href="https://www.google.com/maps/search/?api=1&query=Yakiniku+Ponga+Ebisu" 
+                                        target="_blank" 
+                                        rel="noreferrer"
+                                        className="inline-flex items-center bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded text-xs transition-colors"
+                                    >
+                                        <Icons.MapPin size={12} className="mr-1"/> 지도 보기
+                                    </a>
+                                </div>
+                            </div>
+                        </ScheduleCard>
+
+                        {/* 6. 일루미네이션 */}
+                        <ScheduleCard time="20:30 - 22:00" title="롯폰기 일루미네이션" iconName="Moon">
+                             <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                                <p className="text-sm text-indigo-900">
+                                    ✨ <strong>도쿄 미드타운 / 롯폰기 힐즈</strong><br/>
+                                    <span className="text-xs text-indigo-600">택시로 이동 (약 10분). 겨울밤 낭만 즐기기.</span>
+                                </p>
+                             </div>
+                        </ScheduleCard>
+
+                        {/* 7. 뒷풀이 */}
+                        <ScheduleCard time="22:00 ~" title="뒷풀이 (신주쿠 복귀)" iconName="Beer">
+                            <p className="text-sm text-gray-700 mb-2">
+                                🏮 <strong>오모이데 요코초 (추억의 거리)</strong>
+                            </p>
+                            <p className="text-xs text-gray-500 leading-relaxed">
+                                좁은 골목 꼬치구이 집에서 생맥주 한 잔.<br/>
+                                마무리는 걸어서 숙소로 복귀 🚶
+                            </p>
+                        </ScheduleCard>
+
+                    </div>
+
+                    {/* 공항 이동 상세 모달 */}
+                    <Modal 
+                        isOpen={isAirportModalOpen} 
+                        onClose={() => setIsAirportModalOpen(false)}
+                        title="✈️ 공항 → 숙소 완벽 가이드"
+                    >
+                        <div className="space-y-6">
+                            {/* Step 1 */}
+                            <div className="relative pl-6 border-l-2 border-blue-200">
+                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">1</div>
+                                <h4 className="font-bold text-gray-800">지하로 이동 (Train)</h4>
+                                <p className="text-sm text-gray-600 mt-1">
+                                    짐 찾고 나오자마자 <span className="text-blue-600 font-bold">'철도(Train)'</span> 표지판을 보고 지하 1층으로 내려가세요.
+                                </p>
+                            </div>
+
+                            {/* Step 2 */}
+                            <div className="relative pl-6 border-l-2 border-blue-200">
+                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">2</div>
+                                <h4 className="font-bold text-gray-800">N'EX 티켓 구매</h4>
+                                <div className="bg-red-50 p-3 rounded-lg mt-2 border border-red-100">
+                                    <p className="text-sm text-gray-700 font-bold flex items-center mb-1">
+                                        <Icons.AlertCircle size={14} className="text-red-500 mr-1"/> 빨간색 매표기 찾기
+                                    </p>
+                                    <ul className="text-xs text-gray-600 space-y-1">
+                                        <li>1. 한국어 선택</li>
+                                        <li>2. <strong>N'EX Tokyo Round Trip Ticket</strong> (왕복) 선택</li>
+                                        <li>3. 여권 스캔 (할인 적용됨) → 5,000엔 결제</li>
+                                        <li className="text-red-600 font-bold">*돌아오는 표는 절대 잃어버리면 안 됨!</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Step 3 */}
+                            <div className="relative pl-6 border-l-2 border-blue-200">
+                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">3</div>
+                                <h4 className="font-bold text-gray-800">N'EX 탑승 & 신주쿠 하차</h4>
+                                <p className="text-sm text-gray-600 mt-1">
+                                    <span className="bg-red-600 text-white px-1.5 rounded text-xs mr-1">빨간 기차</span>
+                                    탑승 후 약 1시간 20분 이동.<br/>
+                                    <strong>'신주쿠(Shinjuku)'</strong> 역에서 하차하세요.
+                                </p>
+                            </div>
+
+                            {/* Step 4 */}
+                            <div className="relative pl-6 border-l-2 border-blue-200">
+                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">4</div>
+                                <h4 className="font-bold text-gray-800">동쪽 출구 (East Exit)로 탈출</h4>
+                                <p className="text-sm text-gray-600 mt-1">
+                                    승강장에서 노란색 <strong>'East Exit(동쪽 출구)'</strong> 표지판만 보고 계단을 올라와 지상으로 나오세요.
+                                </p>
+                            </div>
+
+                            {/* Step 5 */}
+                            <div className="relative pl-6 border-l-2 border-transparent">
+                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">5</div>
+                                <h4 className="font-bold text-gray-800">택시 탑승 (Finish!)</h4>
+                                <p className="text-sm text-gray-600 mt-1 mb-2">
+                                    역 앞 택시 승강장에서 탑승. 기사님께 아래 일본어를 보여주세요.
+                                </p>
+                                <div className="bg-gray-100 p-3 rounded text-center border border-gray-300">
+                                    <p className="font-bold text-lg text-gray-800">東新宿、相鉄フレッサイン</p>
+                                    <p className="text-xs text-gray-500 mt-1">(히가시 신주쿠, 소테츠 프레사 인)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Modal>
+
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
