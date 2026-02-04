@@ -52,7 +52,10 @@
             X: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>),
             AlertCircle: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>),
             CheckCircle: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>),
-            Ticket: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>)
+            Ticket: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>),
+            ArrowRight: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>),
+            Car: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>),
+            Train: (props) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><circle cx="8" cy="15" r="2"/><circle cx="16" cy="15" r="2"/></svg>)
         };
 
         // 팝업 모달 컴포넌트
@@ -61,7 +64,7 @@
             return (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animation-fade-in" onClick={onClose}></div>
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[80vh] flex flex-col relative z-10 animation-scale-up overflow-hidden">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[85vh] flex flex-col relative z-10 animation-scale-up overflow-hidden">
                         <div className="bg-blue-600 text-white p-4 flex justify-between items-center shrink-0">
                             <h3 className="font-bold text-lg">{title}</h3>
                             <button onClick={onClose} className="bg-white/20 p-1 rounded-full hover:bg-white/30 transition">
@@ -81,25 +84,112 @@
             );
         };
 
-        const ScheduleCard = ({ time, title, iconName, children, isHighlight = false, onClick = null, clickHint = "" }) => {
+        // 경로 정보 데이터
+        const routeData = {
+            airport: {
+                title: "✈️ 공항 → 숙소 (신주쿠)",
+                type: "train_taxi",
+                steps: [
+                    { title: "N'EX 티켓 구매", desc: "공항 지하 JR 매표소 (빨간색)에서 '왕복 할인 티켓(5,000엔)' 구매" },
+                    { title: "N'EX 탑승", desc: "신주쿠(Shinjuku)행 탑승 (약 80분)" },
+                    { title: "신주쿠역 하차 & 택시", desc: "동쪽 출구(East Exit)로 나와서 택시 탑승" }
+                ],
+                taxiText: "東新宿、相鉄フレッサインまでお願いします。",
+                taxiPron: "히가시 신주쿠, 소테츠 프레사 인 마데 오네가이시마스",
+                taxiDesc: "히가시 신주쿠 소테츠 프레사 인으로 가주세요."
+            },
+            lunch: {
+                title: "🏨 숙소 → 점심 (가부키초)",
+                type: "taxi",
+                from: "호텔 앞",
+                to: "이치란 (가부키초)",
+                time: "약 5~10분",
+                taxiText: "歌舞伎町の『一蘭（いちらん）』近くまでお願いします。",
+                taxiPron: "카부키초노 이치란 치카쿠 마데 오네가이시마스",
+                taxiDesc: "가부키초 이치란 라멘 근처로 가주세요."
+            },
+            shibuya: {
+                title: "🍜 신주쿠 → 시부야 스카이",
+                type: "choice", // 탭 선택형 (택시 vs 지하철)
+                taxi: {
+                    from: "신주쿠 (점심 먹은 곳)",
+                    to: "시부야 스크램블 스퀘어",
+                    time: "약 20분",
+                    taxiText: "渋谷スクランブルスクエアまで 부탁드립니다.",
+                    taxiPron: "시부야 스쿠란부루 스쿠에아 마데 오네가이시마스",
+                    taxiDesc: "시부야 스크램블 스퀘어로 가주세요."
+                },
+                subway: {
+                    lineName: "JR 야마노테선 (초록색)",
+                    direction: "시부야·시나가와 방면 (14번 승강장)",
+                    from: "신주쿠역 (JR)",
+                    to: "시부야역",
+                    exit: "남쪽 개찰구 (South Gate)",
+                    time: "약 7분 (170엔)",
+                    desc: "도로가 막힐 수 있어 전철이 훨씬 빠릅니다! 🚇"
+                }
+            },
+            dinner: {
+                title: "🌆 시부야 → 저녁 (에비스)",
+                type: "taxi",
+                from: "시부야 스크램블 스퀘어 1층 택시 승강장",
+                to: "야키니쿠 폰가 (에비스)",
+                time: "약 10분",
+                taxiText: "恵比寿の『焼肉ぽんが』まで 부탁드립니다.\n(恵比寿駅西口 쪽입니다)",
+                taxiPron: "에비스노 야키니쿠 폰가 마데 오네가이시마스.\n(에비스에키 니시구치노 호-데스)",
+                taxiDesc: "에비스 '야키니쿠 폰가'로 가주세요. (에비스역 서쪽 출구 쪽입니다)"
+            },
+            roppongi: {
+                title: "🥩 에비스 → 롯폰기",
+                type: "taxi",
+                from: "식당 앞 or 큰길",
+                to: "도쿄 미드타운",
+                time: "약 10~15분",
+                taxiText: "六本木の東京ミッドタウンまで 부탁드립니다.",
+                taxiPron: "롯폰기노 도쿄 밋도타운 마데 오네가이시마스",
+                taxiDesc: "롯폰기 도쿄 미드타운으로 가주세요."
+            },
+            yokocho: {
+                title: "✨ 롯폰기 → 오모이데 요코초",
+                type: "taxi",
+                from: "도쿄 미드타운",
+                to: "신주쿠 서쪽 출구",
+                time: "약 15~20분",
+                taxiText: "新宿駅西口の『思い出横丁』근처まで 부탁드립니다.",
+                taxiPron: "신주쿠에키 니시구치노 오모이데 요코초 치카쿠 마데 오네가이시마스",
+                taxiDesc: "신주쿠역 서쪽 출구 '오모이데 요코초' 근처로 가주세요."
+            }
+        };
+
+        const ScheduleCard = ({ time, title, iconName, children, isHighlight = false, routeKey = null, onRouteClick }) => {
             const IconComponent = Icons[iconName];
             return (
-                <div 
-                    className={`relative pl-8 pb-8 border-l-2 ${isHighlight ? 'border-pink-400' : 'border-gray-200'} last:border-l-0 ${onClick ? 'cursor-pointer group' : ''}`}
-                    onClick={onClick}
-                >
+                <div className={`relative pl-8 pb-8 border-l-2 ${isHighlight ? 'border-pink-400' : 'border-gray-200'} last:border-l-0`}>
                     <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full ${isHighlight ? 'bg-pink-500 ring-4 ring-pink-100' : 'bg-gray-300'}`} />
                     <div className="flex items-center gap-2 mb-2">
                         <span className="text-sm font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-md font-mono">{time}</span>
-                        <h3 className={`text-lg font-bold ${isHighlight ? 'text-pink-600' : 'text-gray-800 group-hover:text-blue-600 transition'}`}>{title}</h3>
+                        <h3 className={`text-lg font-bold ${isHighlight ? 'text-pink-600' : 'text-gray-800'}`}>{title}</h3>
                         {IconComponent && <IconComponent className={isHighlight ? 'text-pink-500' : 'text-gray-400'} size={18} />}
-                        {onClick && (
-                            <span className="ml-auto text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold animate-pulse">
-                                {clickHint || "Click!"}
-                            </span>
-                        )}
                     </div>
-                    <div className={`bg-white rounded-xl p-4 shadow-sm border ${onClick ? 'border-blue-100 group-hover:border-blue-300 group-hover:shadow-md transition-all' : 'border-gray-100'}`}>
+                    
+                    {/* 이동 가이드 버튼 */}
+                    {routeKey && (
+                        <button 
+                            onClick={() => onRouteClick(routeKey)}
+                            className="w-full mb-3 flex items-center justify-between bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 text-yellow-800 px-3 py-2 rounded-lg transition-colors group"
+                        >
+                            <span className="text-sm font-bold flex items-center">
+                                {routeData[routeKey].type === 'choice' ? 
+                                    <><Icons.Train size={16} className="mr-1 text-yellow-600"/> <span className="mr-1">/</span> <Icons.Car size={16} className="mr-2 text-yellow-600"/></> 
+                                    : <Icons.Car size={16} className="mr-2 text-yellow-600"/>
+                                }
+                                이동 가이드 보기
+                            </span>
+                            <Icons.ArrowRight size={14} className="text-yellow-600 opacity-50 group-hover:opacity-100 transform group-hover:translate-x-1 transition-all" />
+                        </button>
+                    )}
+
+                    <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                         {children}
                     </div>
                 </div>
@@ -132,7 +222,114 @@
 
         const App = () => {
             const [showLunchOptions, setShowLunchOptions] = useState(true);
-            const [isAirportModalOpen, setIsAirportModalOpen] = useState(false);
+            const [modalContent, setModalContent] = useState(null);
+            const [activeTab, setActiveTab] = useState('taxi'); // 모달 탭 상태
+
+            const openRouteModal = (key) => {
+                setModalContent(routeData[key]);
+                setActiveTab('taxi'); // 모달 열 때 탭 초기화
+            };
+
+            const closeModal = () => {
+                setModalContent(null);
+            };
+
+            // 선택형 모달 내용 렌더링
+            const renderChoiceContent = () => {
+                if (!modalContent) return null;
+                const { taxi, subway } = modalContent;
+
+                return (
+                    <div>
+                        {/* 탭 버튼 */}
+                        <div className="flex bg-gray-100 p-1 rounded-lg mb-4">
+                            <button 
+                                onClick={() => setActiveTab('taxi')}
+                                className={`flex-1 flex items-center justify-center py-2 text-sm font-bold rounded-md transition-all ${activeTab === 'taxi' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                            >
+                                <Icons.Car size={16} className="mr-1"/> 택시
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab('subway')}
+                                className={`flex-1 flex items-center justify-center py-2 text-sm font-bold rounded-md transition-all ${activeTab === 'subway' ? 'bg-white text-green-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                            >
+                                <Icons.Train size={16} className="mr-1"/> 지하철 (추천!)
+                            </button>
+                        </div>
+
+                        {/* 탭 내용 */}
+                        {activeTab === 'taxi' ? (
+                            <>
+                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 mb-4">
+                                    <div className="flex items-center justify-between text-sm mb-2">
+                                        <span className="bg-gray-200 text-gray-600 px-2 py-0.5 rounded text-xs">출발</span>
+                                        <span className="font-bold text-gray-700 truncate ml-2 flex-1">{taxi.from}</span>
+                                    </div>
+                                    <div className="flex items-center justify-center text-gray-400 my-1"><Icons.ChevronDown size={14}/></div>
+                                    <div className="flex items-center justify-between text-sm">
+                                        <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded text-xs">도착</span>
+                                        <span className="font-bold text-blue-700 truncate ml-2 flex-1">{taxi.to}</span>
+                                    </div>
+                                    <p className="text-right text-xs text-gray-400 mt-2">예상 소요시간: {taxi.time}</p>
+                                </div>
+                                <div className="bg-yellow-50 p-4 rounded-xl border-2 border-yellow-300 shadow-sm">
+                                    <p className="text-xs text-yellow-800 font-bold mb-2 flex items-center">
+                                        <span className="bg-yellow-400 text-white px-1.5 rounded mr-1">Tip</span>
+                                        기사님께 이 화면을 보여주세요!
+                                    </p>
+                                    <div className="bg-white p-4 rounded-lg border border-yellow-100 mb-3 text-center">
+                                        <p className="text-xl font-bold text-gray-900 leading-relaxed whitespace-pre-line">
+                                            {taxi.taxiText}
+                                        </p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-sm font-bold text-indigo-600 mb-1">🗣️ 한글 발음</p>
+                                        <p className="text-sm text-gray-700 bg-white/50 inline-block px-3 py-1 rounded-full whitespace-pre-line">
+                                            "{taxi.taxiPron}"
+                                        </p>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="space-y-3">
+                                <div className="bg-green-50 p-4 rounded-xl border border-green-200">
+                                    <h4 className="font-bold text-green-800 flex items-center mb-3">
+                                        <Icons.CheckCircle size={18} className="mr-2 text-green-600"/> 추천 이유
+                                    </h4>
+                                    <p className="text-sm text-green-700 bg-white p-2 rounded border border-green-100">
+                                        {subway.desc}
+                                    </p>
+                                </div>
+                                <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                                    <div className="flex items-center mb-3">
+                                        <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded mr-2">노선</span>
+                                        <span className="font-bold text-gray-800">{subway.lineName}</span>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="flex relative pl-4 border-l-2 border-green-200">
+                                            <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                                            <div className="ml-2 -mt-1">
+                                                <p className="text-sm font-bold text-gray-800">{subway.from}</p>
+                                                <p className="text-xs text-blue-600 font-bold mt-0.5">{subway.direction}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex relative pl-4 border-l-2 border-transparent">
+                                            <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                                            <div className="ml-2 -mt-1">
+                                                <p className="text-sm font-bold text-gray-800">{subway.to}</p>
+                                                <p className="text-xs text-gray-500 mt-0.5">{subway.exit}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between text-xs text-gray-500">
+                                        <span>소요시간: {subway.time}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
 
             return (
                 <div className="max-w-md mx-auto bg-gray-50 min-h-screen font-sans pb-20 shadow-xl">
@@ -153,13 +350,13 @@
                     {/* Timeline */}
                     <div className="p-6 mt-2">
                         
-                        {/* 1. 공항 도착 및 이동 (클릭 시 모달) */}
+                        {/* 1. 공항 도착 */}
                         <ScheduleCard 
                             time="11:55 - 14:30" 
                             title="도착 및 숙소 이동" 
                             iconName="Plane"
-                            onClick={() => setIsAirportModalOpen(true)}
-                            clickHint="상세 경로 보기"
+                            routeKey="airport"
+                            onRouteClick={openRouteModal}
                         >
                             <ul className="text-sm text-gray-600 space-y-3 pointer-events-none">
                                 <li className="flex items-start">
@@ -189,8 +386,15 @@
                             </div>
                         </ScheduleCard>
 
-                        {/* 3. 점심 식사 (선택) */}
-                        <ScheduleCard time="15:00 - 16:00" title="늦은 점심 (메뉴 선택)" iconName="Utensils" isHighlight={true}>
+                        {/* 3. 점심 식사 */}
+                        <ScheduleCard 
+                            time="15:00 - 16:00" 
+                            title="늦은 점심 (메뉴 선택)" 
+                            iconName="Utensils" 
+                            isHighlight={true}
+                            routeKey="lunch"
+                            onRouteClick={openRouteModal}
+                        >
                             <div className="flex justify-between items-center mb-4">
                                 <p className="text-xs text-pink-600 font-bold">*신주쿠/숙소 근처 맛집 (3곳 중 선택)</p>
                                 <button 
@@ -226,7 +430,14 @@
                         </ScheduleCard>
 
                         {/* 4. 시부야 이동 및 스카이 */}
-                        <ScheduleCard time="16:00 - 18:00" title="시부야 스카이 & 스크램블" iconName="Camera" isHighlight={true}>
+                        <ScheduleCard 
+                            time="16:00 - 18:00" 
+                            title="시부야 스카이 & 스크램블" 
+                            iconName="Camera" 
+                            isHighlight={true}
+                            routeKey="shibuya"
+                            onRouteClick={openRouteModal}
+                        >
                              <div className="space-y-3">
                                 <div className="bg-orange-50 p-3 rounded-lg border border-orange-100">
                                     <p className="font-bold text-orange-900 flex items-center mb-1">
@@ -237,12 +448,12 @@
                                         <span className="text-xs text-gray-500 pl-4">노을(17:25)과 야경을 모두 즐기는 골든타임!</span>
                                     </p>
                                     <a 
-                                        href="https://www.shibuya-scramble-square.com/sky/ticket/" 
+                                        href="https://www.google.com/maps/search/?api=1&query=SHIBUYA+SKY" 
                                         target="_blank" 
                                         rel="noreferrer"
                                         className="flex items-center justify-center w-full py-2 bg-orange-500 text-white rounded-lg text-sm font-bold shadow-md hover:bg-orange-600 transition-colors"
                                     >
-                                        <Icons.Ticket size={16} className="mr-1" /> 티켓 예매하기 (공식)
+                                        <Icons.MapPin size={16} className="mr-1" /> 구글지도 보기
                                     </a>
                                 </div>
                                 <div className="pl-2 border-l-2 border-gray-200">
@@ -254,8 +465,15 @@
                              </div>
                         </ScheduleCard>
 
-                        {/* 5. 저녁 식사 (확정) */}
-                        <ScheduleCard time="19:15 (예약확정)" title="저녁: 야키니쿠 폰가 에비수" iconName="Utensils" isHighlight={true}>
+                        {/* 5. 저녁 식사 */}
+                        <ScheduleCard 
+                            time="19:15 (예약확정)" 
+                            title="저녁: 야키니쿠 폰가 에비수" 
+                            iconName="Utensils" 
+                            isHighlight={true}
+                            routeKey="dinner"
+                            onRouteClick={openRouteModal}
+                        >
                             <div className="bg-gray-900 text-white p-4 rounded-xl shadow-lg relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-r from-red-900/40 to-black/40"></div>
                                 <div className="relative z-10">
@@ -274,7 +492,13 @@
                         </ScheduleCard>
 
                         {/* 6. 일루미네이션 */}
-                        <ScheduleCard time="20:30 - 22:00" title="롯폰기 일루미네이션" iconName="Moon">
+                        <ScheduleCard 
+                            time="20:30 - 22:00" 
+                            title="롯폰기 일루미네이션" 
+                            iconName="Moon"
+                            routeKey="roppongi"
+                            onRouteClick={openRouteModal}
+                        >
                              <div className="bg-indigo-50 p-3 rounded-lg border border-indigo-100">
                                 <p className="text-sm text-indigo-900">
                                     ✨ <strong>도쿄 미드타운 / 롯폰기 힐즈</strong><br/>
@@ -284,7 +508,13 @@
                         </ScheduleCard>
 
                         {/* 7. 뒷풀이 */}
-                        <ScheduleCard time="22:00 ~" title="뒷풀이 (신주쿠 복귀)" iconName="Beer">
+                        <ScheduleCard 
+                            time="22:00 ~" 
+                            title="뒷풀이 (신주쿠 복귀)" 
+                            iconName="Beer"
+                            routeKey="yokocho"
+                            onRouteClick={openRouteModal}
+                        >
                             <p className="text-sm text-gray-700 mb-2">
                                 🏮 <strong>오모이데 요코초 (추억의 거리)</strong>
                             </p>
@@ -296,72 +526,83 @@
 
                     </div>
 
-                    {/* 공항 이동 상세 모달 */}
+                    {/* 2일차 이동 버튼 */}
+                    <div className="p-6 pt-0 pb-10">
+                        <a 
+                            href="https://treysong87.github.io/tokyoday2/"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center justify-center w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 font-bold text-lg"
+                        >
+                            2일차 일정 보러가기 <Icons.ArrowRight className="ml-2" />
+                        </a>
+                    </div>
+
+                    {/* 이동 경로 및 기사님 보여주기용 모달 */}
                     <Modal 
-                        isOpen={isAirportModalOpen} 
-                        onClose={() => setIsAirportModalOpen(false)}
-                        title="✈️ 공항 → 숙소 완벽 가이드"
+                        isOpen={!!modalContent} 
+                        onClose={closeModal}
+                        title={modalContent?.title}
                     >
-                        <div className="space-y-6">
-                            {/* Step 1 */}
-                            <div className="relative pl-6 border-l-2 border-blue-200">
-                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">1</div>
-                                <h4 className="font-bold text-gray-800">지하로 이동 (Train)</h4>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    짐 찾고 나오자마자 <span className="text-blue-600 font-bold">'철도(Train)'</span> 표지판을 보고 지하 1층으로 내려가세요.
-                                </p>
-                            </div>
+                        {modalContent && (
+                            <div className="space-y-6">
+                                {/* 일반 경로 안내 (airport 타입) */}
+                                {modalContent.type === 'train_taxi' && (
+                                    <div className="space-y-4">
+                                        {modalContent.steps.map((step, idx) => (
+                                            <div key={idx} className="relative pl-6 border-l-2 border-blue-200 last:border-l-0">
+                                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">{idx + 1}</div>
+                                                <h4 className="font-bold text-gray-800">{step.title}</h4>
+                                                <p className="text-sm text-gray-600 mt-1">{step.desc}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
 
-                            {/* Step 2 */}
-                            <div className="relative pl-6 border-l-2 border-blue-200">
-                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">2</div>
-                                <h4 className="font-bold text-gray-800">N'EX 티켓 구매</h4>
-                                <div className="bg-red-50 p-3 rounded-lg mt-2 border border-red-100">
-                                    <p className="text-sm text-gray-700 font-bold flex items-center mb-1">
-                                        <Icons.AlertCircle size={14} className="text-red-500 mr-1"/> 빨간색 매표기 찾기
-                                    </p>
-                                    <ul className="text-xs text-gray-600 space-y-1">
-                                        <li>1. 한국어 선택</li>
-                                        <li>2. <strong>N'EX Tokyo Round Trip Ticket</strong> (왕복) 선택</li>
-                                        <li>3. 여권 스캔 (할인 적용됨) → 5,000엔 결제</li>
-                                        <li className="text-red-600 font-bold">*돌아오는 표는 절대 잃어버리면 안 됨!</li>
-                                    </ul>
-                                </div>
-                            </div>
+                                {/* 선택형 안내 (choice 타입: 신주쿠 -> 시부야) */}
+                                {modalContent.type === 'choice' ? renderChoiceContent() : null}
 
-                            {/* Step 3 */}
-                            <div className="relative pl-6 border-l-2 border-blue-200">
-                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">3</div>
-                                <h4 className="font-bold text-gray-800">N'EX 탑승 & 신주쿠 하차</h4>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    <span className="bg-red-600 text-white px-1.5 rounded text-xs mr-1">빨간 기차</span>
-                                    탑승 후 약 1시간 20분 이동.<br/>
-                                    <strong>'신주쿠(Shinjuku)'</strong> 역에서 하차하세요.
-                                </p>
-                            </div>
+                                {/* 택시 상세 안내 (단일 택시 타입) */}
+                                {(modalContent.type === 'taxi' || modalContent.taxiText) && modalContent.type !== 'choice' && (
+                                    <>
+                                        {/* 경로 요약 */}
+                                        {modalContent.type === 'taxi' && (
+                                            <div className="bg-gray-50 p-3 rounded-lg border border-gray-100 mb-4">
+                                                <div className="flex items-center justify-between text-sm mb-2">
+                                                    <span className="bg-gray-200 text-gray-600 px-2 py-0.5 rounded text-xs">출발</span>
+                                                    <span className="font-bold text-gray-700 truncate ml-2 flex-1">{modalContent.from}</span>
+                                                </div>
+                                                <div className="flex items-center justify-center text-gray-400 my-1"><Icons.ChevronDown size={14}/></div>
+                                                <div className="flex items-center justify-between text-sm">
+                                                    <span className="bg-blue-100 text-blue-600 px-2 py-0.5 rounded text-xs">도착</span>
+                                                    <span className="font-bold text-blue-700 truncate ml-2 flex-1">{modalContent.to}</span>
+                                                </div>
+                                                <p className="text-right text-xs text-gray-400 mt-2">예상 소요시간: {modalContent.time}</p>
+                                            </div>
+                                        )}
 
-                            {/* Step 4 */}
-                            <div className="relative pl-6 border-l-2 border-blue-200">
-                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">4</div>
-                                <h4 className="font-bold text-gray-800">동쪽 출구 (East Exit)로 탈출</h4>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    승강장에서 노란색 <strong>'East Exit(동쪽 출구)'</strong> 표지판만 보고 계단을 올라와 지상으로 나오세요.
-                                </p>
+                                        {/* 기사님 보여주기 섹션 */}
+                                        <div className="bg-yellow-50 p-4 rounded-xl border-2 border-yellow-300 shadow-sm">
+                                            <p className="text-xs text-yellow-800 font-bold mb-2 flex items-center">
+                                                <span className="bg-yellow-400 text-white px-1.5 rounded mr-1">Tip</span>
+                                                기사님께 이 화면을 보여주세요!
+                                            </p>
+                                            <div className="bg-white p-4 rounded-lg border border-yellow-100 mb-3 text-center">
+                                                <p className="text-xl font-bold text-gray-900 leading-relaxed whitespace-pre-line">
+                                                    {modalContent.taxiText}
+                                                </p>
+                                            </div>
+                                            <div className="text-center">
+                                                <p className="text-sm font-bold text-indigo-600 mb-1">🗣️ 한글 발음</p>
+                                                <p className="text-sm text-gray-700 bg-white/50 inline-block px-3 py-1 rounded-full whitespace-pre-line">
+                                                    "{modalContent.taxiPron}"
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
-
-                            {/* Step 5 */}
-                            <div className="relative pl-6 border-l-2 border-transparent">
-                                <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] flex items-center justify-center font-bold">5</div>
-                                <h4 className="font-bold text-gray-800">택시 탑승 (Finish!)</h4>
-                                <p className="text-sm text-gray-600 mt-1 mb-2">
-                                    역 앞 택시 승강장에서 탑승. 기사님께 아래 일본어를 보여주세요.
-                                </p>
-                                <div className="bg-gray-100 p-3 rounded text-center border border-gray-300">
-                                    <p className="font-bold text-lg text-gray-800">東新宿、相鉄フレッサイン</p>
-                                    <p className="text-xs text-gray-500 mt-1">(히가시 신주쿠, 소테츠 프레사 인)</p>
-                                </div>
-                            </div>
-                        </div>
+                        )}
                     </Modal>
 
                 </div>
